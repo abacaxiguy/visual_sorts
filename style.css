@@ -6,3 +6,21 @@ header{
 .bubble-btn{
     background-color: aqua;
 }
+
+.restart-btn {
+    background-color: crimson;
+}
+
+.shell-btn{
+    background-color: darkolivegreen;
+}
+
+.select-btn{
+    background-color: coral;
+}
+
+.restart-btn,
+.shell-btn,
+.select-btn {
+    color: white;
+}
