@@ -1,11 +1,11 @@
 const canvas = document.querySelector('canvas');
 const bubble_button = document.querySelector('.bubble-btn');
 const shell_button = document.querySelector('.shell-btn');
-const select_button = document.querySelector('.select-btn');
+const insertion_button = document.querySelector('.insertion-btn');
 const restart_button = document.querySelector(".restart-btn");
 const visual_type_button = document.querySelector(".visual-type");
 
-let bubble, select, shell;
+let bubble, insertion, shell;
 let visual_type = 0; // 0 - Dots // 1 - Bars
 
 const random = (min, max) => Math.floor(Math.random() * (max - min)) + min;
@@ -51,7 +51,7 @@ function restart() {
 function stop_all() {
     clearInterval(bubble);
     clearInterval(shell);
-    clearInterval(select);
+    clearInterval(insertion);
 }
 
 restart_button.addEventListener('click', restart);
@@ -110,23 +110,25 @@ shell_button.addEventListener("click", () => {
     }, 100);
 });
 
-select_button.addEventListener("click", () => {
+insertion_button.addEventListener("click", () => {
     let n = 1;
-
-    select = setInterval(function () {
-        if (n > 100) clearInterval(select);
+    
+    insertion = setInterval(function () {
+        if (n > 100) clearInterval(insertion);
+        
+        let j = n - 1;  
+        let temp = list_of_coords[n];
 
         myContext.clearRect(0, 0, window.innerWidth - 100, window.innerHeight - 100);
 
         myContext.fillStyle = "black";
 
-        for (j = n; j > 0; j--) {
-            if (list_of_coords[j] < list_of_coords[j -1]) {
-                temp = list_of_coords[j];
-                list_of_coords[j] = list_of_coords[j -1];
-                list_of_coords[j - 1] = temp;
-            }
+        while (j >= 0 && list_of_coords[j] > temp) {
+            list_of_coords[j + 1] = list_of_coords[j];
+            j--;
         }
+
+        list_of_coords[j + 1] = temp;
 
         for (axis in list_of_coords) {
             if (!visual_type) myContext.fillRect(Math.ceil(height / 100) + axis * 6, 5, 5, list_of_coords[axis]);

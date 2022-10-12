@@ -15,7 +15,7 @@ header{
     background-color: darkolivegreen;
 }
 
-.select-btn{
+.insertion-btn{
     background-color: coral;
 }
 
@@ -25,7 +25,7 @@ header{
 
 .restart-btn,
 .shell-btn,
-.select-btn,
+.insertion-btn,
 .visual-type {
     color: white;
 }
