@@ -19,8 +19,13 @@ header{
     background-color: coral;
 }
 
+.visual-type{
+    background-color: blueviolet;
+}
+
 .restart-btn,
 .shell-btn,
-.select-btn {
+.select-btn,
+.visual-type {
     color: white;
 }

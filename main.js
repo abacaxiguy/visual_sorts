@@ -3,8 +3,10 @@ const bubble_button = document.querySelector('.bubble-btn');
 const shell_button = document.querySelector('.shell-btn');
 const select_button = document.querySelector('.select-btn');
 const restart_button = document.querySelector(".restart-btn");
+const visual_type_button = document.querySelector(".visual-type");
 
 let bubble, select, shell;
+let visual_type = 0; // 0 - Dots // 1 - Bars
 
 const random = (min, max) => Math.floor(Math.random() * (max - min)) + min;
 
@@ -40,7 +42,9 @@ function restart() {
     }
     
     for (axis in list_of_coords) {
-        myContext.fillRect(list_of_coords[axis], Math.ceil(height / 100) + axis * 6, 5, 5);
+        if (!visual_type) myContext.fillRect(Math.ceil(height / 100) + axis * 6, 5, 5, list_of_coords[axis]);
+        else myContext.fillRect(list_of_coords[axis], Math.ceil(height / 100) + axis * 6, 5, 5);
+        
     }
 }
 
@@ -71,7 +75,8 @@ bubble_button.addEventListener('click', () => {
         }
 
         for (axis in list_of_coords) {
-            myContext.fillRect(list_of_coords[axis], Math.ceil(height / 100) + axis * 6, 5, 5);
+            if (!visual_type) myContext.fillRect(Math.ceil(height / 100) + axis * 6, 5, 5, list_of_coords[axis]);
+            else myContext.fillRect(list_of_coords[axis], Math.ceil(height / 100) + axis * 6, 5, 5);
         }
 
         n--;
@@ -97,7 +102,8 @@ shell_button.addEventListener("click", () => {
         }
 
         for (axis in list_of_coords) {
-            myContext.fillRect(list_of_coords[axis], Math.ceil(height / 100) + axis * 6, 5, 5);
+            if (!visual_type) myContext.fillRect(Math.ceil(height / 100) + axis * 6, 5, 5, list_of_coords[axis]);
+            else myContext.fillRect(list_of_coords[axis], Math.ceil(height / 100) + axis * 6, 5, 5);
         }
 
         d--;
@@ -123,9 +129,23 @@ select_button.addEventListener("click", () => {
         }
 
         for (axis in list_of_coords) {
-            myContext.fillRect(list_of_coords[axis], Math.ceil(height / 100) + axis * 6, 5, 5);
+            if (!visual_type) myContext.fillRect(Math.ceil(height / 100) + axis * 6, 5, 5, list_of_coords[axis]);
+            else myContext.fillRect(list_of_coords[axis], Math.ceil(height / 100) + axis * 6, 5, 5);
         }
 
         n++;
     }, 100);
 });
+
+
+visual_type_button.addEventListener('click', () => {
+    if (visual_type_button.innerText == "Dots 🔁") {
+        visual_type_button.innerText = "Bars 🔁";
+        visual_type = 1;
+        restart();
+    } else {
+        visual_type_button.innerText = "Dots 🔁";
+        visual_type = 0;
+        restart();
+    }
+})
