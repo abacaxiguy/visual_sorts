@@ -2,19 +2,26 @@ const canvas = document.querySelector('canvas');
 const bubble_button = document.querySelector('.bubble-btn');
 const shell_button = document.querySelector('.shell-btn');
 const insertion_button = document.querySelector('.insertion-btn');
+const selection_button = document.querySelector('.selection-btn');
 const restart_button = document.querySelector(".restart-btn");
 const visual_type_button = document.querySelector(".visual-type");
 
-let bubble, insertion, shell;
+let bubble, insertion, shell, selection;
 let visual_type = 0; // 0 - Dots // 1 - Bars
 
 const random = (min, max) => Math.floor(Math.random() * (max - min)) + min;
 
-height = window.innerHeight - 100;
-width = window.innerWidth - 100;
+let height = window.innerHeight - window.innerHeight * 0.15;
+let width = window.innerWidth - window.innerWidth * 0.15;
 
 canvas.height = height
 canvas.width = width
+
+const size = 100; // 100 dots
+
+const time = 100 // 100ms
+
+const index_axis = (axis, size) => Math.ceil(height / size) + axis * 10;
 
 const myContext = canvas.getContext('2d');
 
@@ -22,47 +29,50 @@ myContext.strokeStyle = "white";
 
 list_of_coords = [];
 
+check_visual_type();
 restart();
+
+function redraw(list_of_coords) {
+    for (axis in list_of_coords) {
+        if (visual_type) myContext.fillRect(list_of_coords[axis], index_axis(axis, size), 5, 5); 
+            
+        else myContext.fillRect(index_axis(axis, size), 5, 5, list_of_coords[axis]);
+    }
+}
 
 function restart() {
     stop_all();
     
     list_of_coords = [];
 
-    myContext.clearRect(0, 0, window.innerWidth - 100, window.innerHeight - 100);
+    myContext.clearRect(0, 0, width, height);
 
-    myContext.rect(0, 0, width, height);
-    myContext.stroke();
-    myContext.fillStyle = "black";
-    
     let i = 0;
     
-    while (i++ < 100) {
+    while (i++ < size) {
         list_of_coords.push(random(0, width));
     }
     
-    for (axis in list_of_coords) {
-        if (!visual_type) myContext.fillRect(Math.ceil(height / 100) + axis * 6, 5, 5, list_of_coords[axis]);
-        else myContext.fillRect(list_of_coords[axis], Math.ceil(height / 100) + axis * 6, 5, 5);
-        
-    }
+    redraw(list_of_coords);
 }
 
 function stop_all() {
     clearInterval(bubble);
     clearInterval(shell);
     clearInterval(insertion);
+    clearInterval(selection);
 }
+
 
 restart_button.addEventListener('click', restart);
 
 bubble_button.addEventListener('click', () => {
-    let n = 100;
+    let n = size;
 
     bubble = setInterval(function () {
         if (n <= 0) clearInterval(bubble);
 
-        myContext.clearRect(0, 0, window.innerWidth - 100, window.innerHeight - 100);
+        myContext.clearRect(0, 0, width, height);
 
         myContext.fillStyle = "black";
 
@@ -74,13 +84,10 @@ bubble_button.addEventListener('click', () => {
             }
         }
 
-        for (axis in list_of_coords) {
-            if (!visual_type) myContext.fillRect(Math.ceil(height / 100) + axis * 6, 5, 5, list_of_coords[axis]);
-            else myContext.fillRect(list_of_coords[axis], Math.ceil(height / 100) + axis * 6, 5, 5);
-        }
+        redraw(list_of_coords);
 
         n--;
-    }, 100);
+    }, time);
 })
 
 shell_button.addEventListener("click", () => {
@@ -89,7 +96,7 @@ shell_button.addEventListener("click", () => {
     shell = setInterval(function () {
         if (d <= 0) clearInterval(shell);
 
-        myContext.clearRect(0, 0, window.innerWidth - 100, window.innerHeight - 100);
+        myContext.clearRect(0, 0, width, height);
 
         myContext.fillStyle = "black";
 
@@ -101,13 +108,10 @@ shell_button.addEventListener("click", () => {
             }
         }
 
-        for (axis in list_of_coords) {
-            if (!visual_type) myContext.fillRect(Math.ceil(height / 100) + axis * 6, 5, 5, list_of_coords[axis]);
-            else myContext.fillRect(list_of_coords[axis], Math.ceil(height / 100) + axis * 6, 5, 5);
-        }
+        redraw(list_of_coords);
 
         d--;
-    }, 100);
+    }, time);
 });
 
 insertion_button.addEventListener("click", () => {
@@ -119,7 +123,7 @@ insertion_button.addEventListener("click", () => {
         let j = n - 1;  
         let temp = list_of_coords[n];
 
-        myContext.clearRect(0, 0, window.innerWidth - 100, window.innerHeight - 100);
+        myContext.clearRect(0, 0, width, height);
 
         myContext.fillStyle = "black";
 
@@ -130,24 +134,65 @@ insertion_button.addEventListener("click", () => {
 
         list_of_coords[j + 1] = temp;
 
-        for (axis in list_of_coords) {
-            if (!visual_type) myContext.fillRect(Math.ceil(height / 100) + axis * 6, 5, 5, list_of_coords[axis]);
-            else myContext.fillRect(list_of_coords[axis], Math.ceil(height / 100) + axis * 6, 5, 5);
-        }
+        redraw(list_of_coords);
 
         n++;
-    }, 100);
+    }, time);
 });
 
+selection_button.addEventListener("click", () => {
+    let n = 0;
+    let min, indice = 0;
 
-visual_type_button.addEventListener('click', () => {
-    if (visual_type_button.innerText == "Dots 🔁") {
+    selection = setInterval(function () {
+        if (n >= size) clearInterval(selection);
+
+        min = list_of_coords[n];
+        indice = n;
+
+        myContext.clearRect(0, 0, width, height);
+
+        myContext.fillStyle = "black";
+
+        for (j = n; j < size; j++) {
+            if (list_of_coords[j] <= min) {
+                min = list_of_coords[j];
+                indice = j;
+            }
+        }
+
+        temp = list_of_coords[n];
+        list_of_coords[n] = list_of_coords[indice];
+        list_of_coords[indice] = temp;
+
+        redraw(list_of_coords);
+
+        n++;
+    }, time);
+});
+
+window.addEventListener("resize", () => {
+    height = window.innerHeight - window.innerHeight * 0.15;
+    width = window.innerWidth - window.innerWidth * 0.15;
+
+    canvas.height = height;
+    canvas.width = width;
+
+    restart();
+});
+
+function check_visual_type() {
+    if (!visual_type) {
         visual_type_button.innerText = "Bars 🔁";
+        canvas.classList.remove("bars");
         visual_type = 1;
         restart();
     } else {
         visual_type_button.innerText = "Dots 🔁";
         visual_type = 0;
+        canvas.classList.add("bars");
         restart();
     }
-})
+}
+
+visual_type_button.addEventListener("click", check_visual_type);
