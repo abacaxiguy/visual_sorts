@@ -1,4 +1,5 @@
 const canvas = document.querySelector('canvas');
+
 const bubble_button = document.querySelector('.bubble-btn');
 const shell_button = document.querySelector('.shell-btn');
 const insertion_button = document.querySelector('.insertion-btn');
@@ -9,30 +10,43 @@ const visual_type_button = document.querySelector(".visual-type");
 let bubble, insertion, shell, selection;
 let visual_type = 0; // 0 - Dots // 1 - Bars
 
-const random = (min, max) => Math.floor(Math.random() * (max - min)) + min;
+canvas.height = window.innerHeight - window.innerHeight * 0.15;
+canvas.width = window.innerWidth - window.innerWidth * 0.15;
 
-let height = window.innerHeight - window.innerHeight * 0.15;
-let width = window.innerWidth - window.innerWidth * 0.15;
-
-canvas.height = height
-canvas.width = width
+window.addEventListener("resize", () => {
+    canvas.height = window.innerHeight - window.innerHeight * 0.15;
+    canvas.width = window.innerWidth - window.innerWidth * 0.15;
+    
+    restart();
+});
 
 const size = 100; // 100 dots
-
 const time = 100 // 100ms
 
-const index_axis = (axis, size) => Math.ceil(height / size) + axis * 10;
+let list_of_coords = [];
 
 const myContext = canvas.getContext('2d');
-
 myContext.strokeStyle = "white";
 
-list_of_coords = [];
+const random = (min, max) => Math.floor(Math.random() * (max - min)) + min;
+
+index_axis = (index, size) => (canvas.width / size) * index + 1; // YOU ARE THE PROBLEM
 
 check_visual_type();
 restart();
 
+function stop_all() {
+    clearInterval(bubble);
+    clearInterval(shell);
+    clearInterval(insertion);
+    clearInterval(selection);
+}
+
 function redraw(list_of_coords) {
+    myContext.clearRect(0, 0, canvas.width, canvas.height);
+
+    myContext.fillStyle = "black";
+
     for (axis in list_of_coords) {
         if (visual_type) myContext.fillRect(list_of_coords[axis], index_axis(axis, size), 5, 5); 
             
@@ -45,24 +59,12 @@ function restart() {
     
     list_of_coords = [];
 
-    myContext.clearRect(0, 0, width, height);
-
     let i = 0;
-    
-    while (i++ < size) {
-        list_of_coords.push(random(0, width));
-    }
+
+    while (i++ < size) list_of_coords.push(random(0, canvas.width));
     
     redraw(list_of_coords);
 }
-
-function stop_all() {
-    clearInterval(bubble);
-    clearInterval(shell);
-    clearInterval(insertion);
-    clearInterval(selection);
-}
-
 
 restart_button.addEventListener('click', restart);
 
@@ -71,10 +73,6 @@ bubble_button.addEventListener('click', () => {
 
     bubble = setInterval(function () {
         if (n <= 0) clearInterval(bubble);
-
-        myContext.clearRect(0, 0, width, height);
-
-        myContext.fillStyle = "black";
 
         for (j = 1; j < n; j++) {
             if (list_of_coords[j - 1] > list_of_coords[j]) {
@@ -91,16 +89,12 @@ bubble_button.addEventListener('click', () => {
 })
 
 shell_button.addEventListener("click", () => {
-    let d = Math.ceil(100 / 2);
+    let d = Math.ceil(size / 2);
 
     shell = setInterval(function () {
         if (d <= 0) clearInterval(shell);
 
-        myContext.clearRect(0, 0, width, height);
-
-        myContext.fillStyle = "black";
-
-        for (j = 0; j + d <= 100 - 1; j++){
+        for (j = 0; j + d <= size - 1; j++){
             if (list_of_coords[j] > list_of_coords[j + d]){
                 temp = list_of_coords[j];
                 list_of_coords[j] = list_of_coords[j + d];
@@ -118,14 +112,10 @@ insertion_button.addEventListener("click", () => {
     let n = 1;
     
     insertion = setInterval(function () {
-        if (n > 100) clearInterval(insertion);
+        if (n > size) clearInterval(insertion);
         
         let j = n - 1;  
         let temp = list_of_coords[n];
-
-        myContext.clearRect(0, 0, width, height);
-
-        myContext.fillStyle = "black";
 
         while (j >= 0 && list_of_coords[j] > temp) {
             list_of_coords[j + 1] = list_of_coords[j];
@@ -150,10 +140,6 @@ selection_button.addEventListener("click", () => {
         min = list_of_coords[n];
         indice = n;
 
-        myContext.clearRect(0, 0, width, height);
-
-        myContext.fillStyle = "black";
-
         for (j = n; j < size; j++) {
             if (list_of_coords[j] <= min) {
                 min = list_of_coords[j];
@@ -169,16 +155,6 @@ selection_button.addEventListener("click", () => {
 
         n++;
     }, time);
-});
-
-window.addEventListener("resize", () => {
-    height = window.innerHeight - window.innerHeight * 0.15;
-    width = window.innerWidth - window.innerWidth * 0.15;
-
-    canvas.height = height;
-    canvas.width = width;
-
-    restart();
 });
 
 function check_visual_type() {
