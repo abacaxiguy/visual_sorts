@@ -1,6 +1,20 @@
 header{
-    height: 100px;
+    height: 80px;
     margin: 0 auto;
+}
+
+.canvas-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.grid{
+    border: 3px solid red;
+}
+
+body{
+    overflow: hidden;
 }
 
 .bubble-btn{
@@ -19,6 +33,10 @@ header{
     background-color: coral;
 }
 
+.selection-btn {
+    background-color: deeppink;
+}
+
 .visual-type{
     background-color: blueviolet;
 }
@@ -26,6 +44,12 @@ header{
 .restart-btn,
 .shell-btn,
 .insertion-btn,
+.selection-btn,
 .visual-type {
     color: white;
+}
+
+.bars{
+    transform: rotate(180deg);
+    transform-origin: center;
 }
